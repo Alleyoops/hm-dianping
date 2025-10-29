@@ -162,6 +162,10 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 
     private IVoucherOrderService proxy;
 
+    /*
+    黑马点评启动报错动态代理对象为空(VoucherOrder)“ because “this.proxy“ is null
+    https://blog.csdn.net/weixin_43982558/article/details/140320428
+     */
     @Override
     public Result seckillVoucher(Long voucherId) {
         Long userId = UserHolder.getUser().getId();
@@ -178,13 +182,12 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         if (r != 0) {
             return Result.fail(r == 1 ? "库存不足" : "不能重复下单");
         }
-
         proxy = (IVoucherOrderService) AopContext.currentProxy();
         SECKILL_ORDER_EXECUTOR.submit(new VoucherOrderHandler());
         return Result.ok(orderId);
     }
 
-    @Override
+//    @Override
 //    public Result seckillVoucher(Long voucherId) {
 //        Long userId = UserHolder.getUser().getId();
 //        //执行lua脚本
